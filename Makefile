@@ -2,21 +2,21 @@
 # The name of the executable to be created
 BIN_NAME := pong
 # Compiler used
-CXX ?= gcc
+CXX ?= g++
 # Extension of source files used in the project
-SRC_EXT = c
+SRC_EXT = cpp
 # Path to the source directory, relative to the makefile
 SRC_PATH = src
 # General compiler flags
-COMPILE_FLAGS = -Wall -Wextra -pedantic
+COMPILE_FLAGS = -std=c++14 -Wall -Wextra -pedantic
 # Additional release-specific flags
-RCOMPILE_FLAGS = -O3 -D NDEBUG
+RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
 DCOMPILE_FLAGS = -g -Og -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_PATH)/ `sdl2-config --cflags`
 # General linker settings
-LINK_FLAGS = `sdl2-config --libs` -lm
+LINK_FLAGS = `sdl2-config --libs` -lpthread
 # Additional release-specific linker settings
 RLINK_FLAGS =
 # Additional debug-specific linker settings
