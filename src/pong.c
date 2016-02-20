@@ -16,9 +16,6 @@ void init_ball   (SDL_Renderer *, struct BallState *, int, int);
 void update_ball (struct BallState *);
 void render_ball (SDL_Renderer *, struct BallState *);
 
-SDL_Surface *create_rgb_surface (
-    Uint32, int, int, int);
-
 const float ball_velocity = 5.0f;
 const int   window_width  = 640;
 const int   window_height = 480;
