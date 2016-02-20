@@ -4,17 +4,26 @@
 #include <time.h>   // time
 #include <stdlib.h> // rand
 
-struct BallState {
-  SDL_Rect pos;
+#ifdef DEBUG
+#include <stdio.h>  // fprintf
+#endif
+
+typedef struct BallPos {
+  float x, y;
+  int w, h;
+} BallPos;
+
+typedef struct Ball {
+  BallPos pos;
   SDL_Texture* texture;
 
   float x_velocity; 
   float y_velocity;
-};
+} Ball;
 
-void init_ball   (SDL_Renderer *, struct BallState *, int, int);
-void update_ball (struct BallState *);
-void render_ball (SDL_Renderer *, struct BallState *);
+void init_ball   (SDL_Renderer *, Ball *, int, int);
+void update_ball (Ball *);
+void render_ball (SDL_Renderer *, Ball *);
 
 const float ball_velocity = 5.0f;
 const int   window_width  = 640;
@@ -22,7 +31,7 @@ const int   window_height = 480;
 
 int main ()
 {
-  struct BallState ball;
+  Ball ball;
   const unsigned int refresh_rate = 16667; // 60 Hz
   const int ball_width = 10, ball_height = 10;
 
@@ -68,7 +77,7 @@ int main ()
   return EXIT_FAILURE;
 }
 
-void init_ball (SDL_Renderer *ren, struct BallState *ball, int w, int h)
+void init_ball (SDL_Renderer *ren, Ball *ball, int w, int h)
 {
   const float angle = 2.0f * M_PI * rand () / RAND_MAX;
   SDL_Surface *surface;
@@ -86,7 +95,7 @@ void init_ball (SDL_Renderer *ren, struct BallState *ball, int w, int h)
   SDL_FreeSurface (surface);
 }
 
-void update_ball (struct BallState *ball)
+void update_ball (Ball *ball)
 {
   ball->pos.x += ball->x_velocity;
   ball->pos.y += ball->y_velocity;
@@ -112,9 +121,15 @@ void update_ball (struct BallState *ball)
   }
 }
 
-void render_ball (SDL_Renderer *ren, struct BallState *ball)
+void render_ball (SDL_Renderer *ren, Ball *ball)
 {
+  SDL_Rect pos;
+  pos.x = ball->pos.x;
+  pos.y = ball->pos.y;
+  pos.w = ball->pos.w;
+  pos.h = ball->pos.h;
+
   SDL_RenderClear (ren);
-  SDL_RenderCopy (ren, ball->texture, NULL, &ball->pos);
+  SDL_RenderCopy (ren, ball->texture, NULL, &pos);
   SDL_RenderPresent (ren);
 }
