@@ -5,31 +5,28 @@
 #include <random>
 
 struct Ball {
-  float x, y;
-  int w, h;
+  float min_x, min_y, max_x, max_y;
   float x_v, y_v;
 
-  const static int width  = 10;
-  const static int height = 10;
-  const static int v      = 5;
+  constexpr static float width  = 10;
+  constexpr static float height = 10;
+  constexpr static float v      =  5.0f;
 };
 
 struct Paddle {
-  float x, y;
-  int w, h;
+  float min_x, min_y, max_x, max_y;
   float max_v;
 
-  const static int   width        =   10;
-  const static int   height       =   50;
-  const static int   behind       =   20;
-  constexpr static float ai_max_v = 4.0f;
+  constexpr static float width    =   10;
+  constexpr static float height   =   50;
+  constexpr static float behind   =   20;
+  constexpr static float ai_max_v =    4.5f;
 };
 
 struct Arena {
-  float x, y;
-  int w, h;
+  float min_x, min_y, max_x, max_y;
 
-  const static int border = 5;
+  constexpr static float border = 5;
 };
 
 class Pong {
