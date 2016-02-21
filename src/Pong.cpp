@@ -28,6 +28,8 @@ SDL_Point
 Pong::Pong (SDL_Renderer* _ren) :
   ren (_ren)
 {
+  SDL_ShowCursor (SDL_DISABLE);
+
   { // Arena init
     int w = 0, h = 0;
     SDL_GetRendererOutputSize (ren, &w, &h);
@@ -162,22 +164,19 @@ void bounce (Ball& ball, const Paddle& paddle)
 void Pong::update_ball_in_play ()
 {
   // Update paddles
-  {
-    int diff = center (ball).y - center (left_paddle).y;
+  { // Left paddle is user-controlled
+    int y = 0;
+    SDL_GetMouseState (nullptr, &y);
 
-    if (std::abs (diff) > left_paddle.max_v) {
-      diff = std::copysign (left_paddle.max_v, diff);
-    }
-
-    if (left_paddle.min_y + diff < arena.min_y) {
+    if (y - Paddle::height / 2 < arena.min_y) {
       left_paddle.min_y = arena.min_y;
       left_paddle.max_y = left_paddle.min_y + Paddle::height;
-    } else if (left_paddle.max_y + diff > arena.max_y) {
+    } else if (y + Paddle::height / 2 > arena.max_y) {
       left_paddle.max_y = arena.max_y;
       left_paddle.min_y = left_paddle.max_y - Paddle::height;
     } else {
-      left_paddle.min_y += diff;
-      left_paddle.max_y += diff;
+      left_paddle.min_y = y - Paddle::height / 2;
+      left_paddle.max_y = y + Paddle::height / 2;
     }
   }
 
