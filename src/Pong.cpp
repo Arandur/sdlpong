@@ -41,16 +41,16 @@ Pong::Pong (SDL_Renderer* _ren) :
   { // Paddle init
     left_paddle = {
       arena.min_x + Paddle::behind, 
-      static_cast<float> (center (arena).y),
+      center (arena).y - Paddle::height / 2,
       arena.min_x + Paddle::behind + Paddle::width, 
-      center (arena).y + Paddle::height,
+      center (arena).y + Paddle::height / 2,
       Paddle::ai_max_v };
 
     right_paddle = {
       arena.max_x - Paddle::behind - Paddle::width, 
-      static_cast<float> (center (arena).y),
+      center (arena).y - Paddle::height / 2,
       arena.max_x - Paddle::behind, 
-      center (arena).y + Paddle::height,
+      center (arena).y + Paddle::height / 2,
       Paddle::ai_max_v };
   }
 }
@@ -126,12 +126,30 @@ void Pong::handle_events ()
 
 void Pong::update_round_begin ()
 {
-  ball.min_x = center (arena).x - Ball::height / 2;
-  ball.max_x = center (arena).x + Ball::height / 2;
-  ball.min_y = center (arena).y - Ball::width  / 2;
-  ball.max_y = center (arena).y + Ball::width  / 2;
-  ball.x_v = 0;
-  ball.y_v = 0;
+  { // Ball init
+    ball.min_x = center (arena).x - Ball::height / 2;
+    ball.max_x = center (arena).x + Ball::height / 2;
+    ball.min_y = center (arena).y - Ball::width  / 2;
+    ball.max_y = center (arena).y + Ball::width  / 2;
+    ball.x_v = 0;
+    ball.y_v = 0;
+  }
+
+  { // Paddle init
+    left_paddle = {
+      arena.min_x + Paddle::behind, 
+      center (arena).y - Paddle::height / 2,
+      arena.min_x + Paddle::behind + Paddle::width, 
+      center (arena).y + Paddle::height / 2,
+      Paddle::ai_max_v };
+
+    right_paddle = {
+      arena.max_x - Paddle::behind - Paddle::width, 
+      center (arena).y - Paddle::height / 2,
+      arena.max_x - Paddle::behind, 
+      center (arena).y + Paddle::height / 2,
+      Paddle::ai_max_v };
+  }
 
   std::this_thread::sleep_for (2s);
 
@@ -144,14 +162,11 @@ void Pong::update_round_begin ()
 void bounce (Ball& ball, const Paddle& paddle)
 {
   const auto max_diff = Ball::height / 2 + Paddle::height / 2;
-  const auto min_diff = -max_diff;
-  const auto diff     = center (paddle).y - center (ball).y;
+  const auto diff     = center (ball).y - center (paddle).y;
 
   // Angle will vary linearly from -5/12 pi to 5/12pi as diff varies from
   // min_diff to max_diff
-  const auto angle =
-    -((-5.0f * M_PI / 12) + 
-      (10.0f * M_PI / 12) * (diff - min_diff) / (max_diff - min_diff));
+  const auto angle = diff / max_diff * (5.0f * M_PI / 12);
 
   ball.x_v = Ball::v * std::cos (angle);
   ball.y_v = Ball::v * std::sin (angle);
