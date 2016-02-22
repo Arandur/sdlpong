@@ -1,35 +1,80 @@
 #pragma once
 
-#include "SDL.h"
+struct SDL_Renderer;
 
-#include <random>
+struct Rect {
+  float x, y, w, h;
 
-struct Ball {
-  float min_x, min_y, max_x, max_y;
-  float x_v, y_v;
-
-  constexpr static float width  = 10;
-  constexpr static float height = 10;
-  constexpr static float v      =  5.0f;
+  Rect (float, float, float, float);
 };
 
-struct Paddle {
-  float min_x, min_y, max_x, max_y;
-  float max_v;
-
-  constexpr static float width    =   10;
-  constexpr static float height   =   50;
-  constexpr static float behind   =   20;
-  constexpr static float ai_max_v =    4.5f;
+template <typename T>
+class Affects
+{
+  virtual void affect (T&) const = 0;
 };
 
-struct Arena {
-  float min_x, min_y, max_x, max_y;
+struct Ball : 
+  public Rect 
+{
+  using Rect::Rect;
 
-  constexpr static float border = 5;
+  float v, x_v, y_v;
+
+  void update ();
+  void change_angle (float);
 };
 
-class Pong {
+struct Paddle : 
+  public Rect, public Affects<Ball> 
+{
+public:
+  using Rect::Rect;
+
+  virtual void affect (Ball&) const override final;
+};
+
+struct PlayerPaddle :
+  public Paddle
+{
+  using Paddle::Paddle;
+
+  void update ();
+};
+
+struct AIPaddle :
+  public Paddle
+{
+  using Paddle::Paddle;
+
+  void update ();
+};
+
+struct Wall :
+  public Rect, public Affects<Ball>
+{
+public:
+  using Rect::Rect;
+
+  virtual void affect (Ball&) const override final;
+};
+
+struct Zone :
+  public Rect, public Affects<Ball>
+{
+public:
+  using Rect::Rect;
+
+  virtual void affect (Ball&) const override final;
+  unsigned int counter () const;
+
+private:
+
+  unsigned int count = 0;
+};
+
+class Pong 
+{
 public:
   Pong (SDL_Renderer*);
 
@@ -55,9 +100,7 @@ private:
 
   Ball ball;
   Paddle left_paddle, right_paddle;
-  Arena arena;
-  int left_score, right_score;
-
-  std::default_random_engine g;
-  std::uniform_real_distribution<float> init_ball_angle_dist {-5 * M_PI / 12, 5 * M_PI / 12};
+  Wall top_wall, bottom_wall;
+  Zone left_zone, right_zone;
+  unsigned left_score = 0, right_score = 0;
 };

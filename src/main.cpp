@@ -30,5 +30,8 @@ int main ()
   Pong pong (ren);
   pong.run ();
 
+  SDL_DestroyRenderer (ren);
+  SDL_DestroyWindow (win);
+
   return 0;
 }
